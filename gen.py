@@ -45,7 +45,7 @@ angle = random.randint(-20,20)  # Rotation angle in degrees (tested between -45Â
                                 # increased to keep the displayed cell size
                                 # constant (as opposed to scaling up the grid).
 
-colorScheme = random.randint(0,20)  # An index into the colorSchemes list
+colorScheme = random.randint(0,23)  # An index into the colorSchemes list
                                     # defined further down or a tuple of the
                                     # form "('#ffe183', '#ffa24b')", with the
                                     # first element being the living cell color
@@ -112,7 +112,10 @@ colorSchemes = [
     ('#89ABE3', '#FCF6F5'),
     ('#D4B996', '#A07855'),
     ('#990011', '#FCF6F5'),
-    ('#EDC2D8', '#8ABAD3')
+    ('#EDC2D8', '#8ABAD3'),
+    ('#ccf381', '#4831d4'),
+    ('#2f3c7e', '#fbeaeb'),
+    ('#ec4d37', '#1d1b1b')
 ]
 
 # offset: split into decimal and integer part
