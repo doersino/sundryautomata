@@ -4,7 +4,7 @@
 // simpler than setting up a python server just for this thing
 
 // generate seed
-$seed = time() % 100000;//intval($_GET['seed']);
+$seed = rand() % 100000;//intval($_GET['seed']);
 
 // run python script
 exec("python3 gen.py $seed");
