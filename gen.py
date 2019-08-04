@@ -45,7 +45,7 @@ angle = random.randint(-20,20)  # Rotation angle in degrees (tested between -45Â
                                 # increased to keep the displayed cell size
                                 # constant (as opposed to scaling up the grid).
 
-colorScheme = random.randint(0,10)  # An index into the colorSchemes list
+colorScheme = random.randint(0,20)  # An index into the colorSchemes list
                                     # defined further down or a tuple of the
                                     # form "('#ffe183', '#ffa24b')", with the
                                     # first element being the living cell color
@@ -95,14 +95,24 @@ colorSchemes = [
     ('#ffe183', '#ffa24b'),
     ('#bddba6', '#83b35e'),
     ('#000000', '#b84c8c'),
+    ('#000000', '#8cb84c'),
     ('#ffb1b0', '#c24848'),
     ('#fc5e5d', '#8e0033'),
     ('#4b669b', '#c0d6ff'),
     ('#cbe638', '#98ad20'),
     ('#ffe5db', '#f2936d'),
+    ('#fff9db', '#f2dc6e'),
     ('#1baaef', '#0d6ca5'),
     ('#e9c3fe', '#6f5b7e'),
-    ('#dddddd', '#333333')
+    ('#dddddd', '#333333'),
+    ('#FC766A', '#5B84B1'),
+    ('#00203F', '#ADEFD1'),
+    ('#97BC62', '#2C5F2D'),
+    ('#FEE715', '#101820'),
+    ('#89ABE3', '#FCF6F5'),
+    ('#D4B996', '#A07855'),
+    ('#990011', '#FCF6F5'),
+    ('#EDC2D8', '#8ABAD3')
 ]
 
 # offset: split into decimal and integer part
@@ -231,13 +241,13 @@ context.translate(imageWidth / 2, imageHeight / 2)
 context.rotate(-angle)
 context.translate(-imageWidth / 2, -imageHeight / 2)
 
-# TODO instead only write to log file?
-context.select_font_face("Helvetica", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
-context.set_font_size(0.012*imageWidth)
-context.set_source_rgba(0, 0, 0, 0.5)
-context.move_to(0.002*imageWidth, 0.998*imageHeight)
-#context.show_text("SEED " + str(SEED) + ", RULE " + str(rule))
-context.show_text(str(SEED))
+# display seed as part of image (obsolete â€“ the log file is a better solution)
+#context.select_font_face("Helvetica", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+#context.set_font_size(0.012*imageWidth)
+#context.set_source_rgba(0, 0, 0, 0.5)
+#context.move_to(0.002*imageWidth, 0.998*imageHeight)
+##context.show_text("SEED " + str(SEED) + ", RULE " + str(rule))
+#context.show_text(str(SEED))
 
 log('Writing to "{}"...'.format(filename))
 surface.write_to_png(filename)
