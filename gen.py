@@ -14,18 +14,13 @@ random.seed(seed)
 
 #TODO while True:
 
-# select at random: either one of the well-known, "small" rules below 256, or (with probabilitly 2/3) a large one
+# Select rule at random: Either one of the well-known, "small" rules below 256,
+# or with ⅔ probability a "large" one.
 smallRules = 0 == random.randint(0,2)
 if (smallRules):
     rule = random.randint(0,255)
 else:
     rule = random.randint(256,4294967296)
-
-initialCondition = 'random'
-
-cellShape = 'square'  # 'square'  → □
-                      # 'circle'  → ◯ (Note that this hides the grid, see
-                      #                gridMode option below.)
 
 width  = random.randint(120,240)  # Width (in cells) of the grid, may be
                                   # increased if a non-zero rotation angle is
@@ -37,11 +32,16 @@ offset = 0  # From which generation on should the states be shown? Handy for
             # pattern. Can also be a decimal number (e.g. 10.5) or negative to
             # adjust the vertical display offset.
 
-angle = random.randint(-20,20)  # Rotation angle in degrees (tested between -45°
-                                # and 45°). To fill the resulting blank spots in
-                                # the corners, the dimensions of the grid are
-                                # increased to keep the displayed cell size
-                                # constant (as opposed to scaling up the grid).
+# Rotation angle in degrees (tested between -45° and 45°). To fill the resulting
+# blank spots in the corners, the dimensions of the grid are increased to keep
+# the displayed cell size constant (as opposed to scaling up the grid).
+# Here, the angle is kept zero with a probability of 1/10, and around ±4-20
+# degrees otherwise.
+angle = 0
+if 0 != random.randint(0,9):
+    angle = random.randint(4,20)
+    if bool(random.getrandbits(1)):
+        angle = -angle
 
 colorScheme = random.randint(0,23)  # An index into the colorSchemes list
                                     # defined further down or a tuple of the
@@ -73,8 +73,6 @@ def log(s):
 
 log("seed " + str(seed))
 log("rule " + str(rule))
-log("initialCondition " + str(initialCondition))
-log("cellShape " + str(cellShape))
 log("width " + str(width))
 log("offset " + str(offset))
 log("angle " + str(angle))
@@ -168,17 +166,7 @@ ruleBinary = format(rule, 'b').zfill(int(math.pow(2,currentStateWidth)))
 transistions = {bin(currentState)[2:].zfill(currentStateWidth): resultingState for currentState, resultingState in enumerate(reversed(ruleBinary))}
 
 # generate initial state
-if initialCondition == 'middle':
-    initialState = list('0' * width)
-    initialState[int(width/2)] = '1'
-elif initialCondition == 'left':
-    initialState = '1' + '0' * (width-1)
-elif initialCondition == 'right':
-    initialState = '0' * (width-1) + '1'
-elif initialCondition == 'random':
-    initialState = [str(random.randint(0,1)) for b in range(0,width)]
-else:
-    initialState = (initialCondition[0:width])[::-1].zfill(width)[::-1]
+initialState = [str(random.randint(0,1)) for b in range(0,width)]
 
 log('Initial state: ' + ''.join(initialState))
 grid = [''.join(initialState)]  # list of sucessive states
@@ -187,7 +175,6 @@ grid = [''.join(initialState)]  # list of sucessive states
 log('Running rule {} cellular automaton...'.format(rule))
 for y in range(0, height + generationOffset):
     currentState = grid[y]
-    #log(currentState)
     currentStatePadded = currentState[-math.floor(currentStateWidth/2):width] + currentState + currentState[0:currentStateWidth-math.floor(currentStateWidth/2)-1]
 
     nextState = ''
@@ -195,6 +182,8 @@ for y in range(0, height + generationOffset):
         pattern = currentStatePadded[x:x+currentStateWidth]
         nextState += transistions[pattern]
     grid.append(nextState)
+    #if (nextState = currentState): #TODO also if offset by one or two
+        #TODO retry twice
 
 
 ###########
@@ -229,15 +218,11 @@ for y, row in enumerate(grid):
         yP = yPositions[y]
         if cell == '1':
             context.set_source_rgb(livingColor[0], livingColor[1], livingColor[2])
-            if cellShape == 'square':
-                context.rectangle(xP, yP, cellSize, cellSize)
-            else:
-                context.arc(xP + cellSize / 2, yP + cellSize / 2, cellSize / 2, 0, 2*math.pi)
-            context.fill()
-        if gridColor is not None and cellShape == 'square':
-            context.set_source_rgb(gridColor[0], gridColor[1], gridColor[2])
             context.rectangle(xP, yP, cellSize, cellSize)
-            context.stroke()
+            context.fill()
+        context.set_source_rgb(gridColor[0], gridColor[1], gridColor[2])
+        context.rectangle(xP, yP, cellSize, cellSize)
+        context.stroke()
 context.translate(imageWidth / 2, imageHeight / 2)
 context.rotate(-angle)
 context.translate(-imageWidth / 2, -imageHeight / 2)
