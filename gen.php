@@ -3,11 +3,8 @@
 // please note that i'm fully aware of how terrible this is, however it's way
 // simpler than setting up a python server just for this thing
 
-// generate seed
-$seed = rand() % 100000;//intval($_GET['seed']);
-
 // run python script
-exec("python3 gen.py $seed");
+exec("python3 gen.py");
 
 // emit image
 $path = 'out.png';

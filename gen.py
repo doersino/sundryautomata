@@ -1,6 +1,6 @@
 # setup: install cairo (your package manager should have it), then pip3 install cairocffi
-# (note to self: on uberspace, cairo is already provided, and the --user flag is needed for pip3)
-# usage: python3 gen.py SEED, where SEED can really be anything
+# (note to self: on uberspace, cairo is already provided, and the --user flag is needed as the last parameter to pip3)
+# usage: python3 gen.py
 # based on: https://github.com/doersino/cellular-automata-posters
 
 import sys
@@ -9,14 +9,12 @@ import random
 import datetime
 import cairocffi as cairo
 
-args = sys.argv[1:]
-SEED = 42
-if len(args) >= 1:
-    SEED = args[0]
+seed = random.randrange(sys.maxsize)
+random.seed(seed)
 
-random.seed(SEED)
+#TODO while True:
 
-# select at random: one of the well-known, "small" rules below 256, or a large one
+# select at random: either one of the well-known, "small" rules below 256, or (with probabilitly 2/3) a large one
 smallRules = 0 == random.randint(0,2)
 if (smallRules):
     rule = random.randint(0,255)
@@ -73,7 +71,7 @@ def log(s):
     with open("gen.log", "a") as logfile:
         logfile.write(str(datetime.datetime.now()) + " " + s + "\n")
 
-log("SEED " + str(SEED))
+log("seed " + str(seed))
 log("rule " + str(rule))
 log("initialCondition " + str(initialCondition))
 log("cellShape " + str(cellShape))
@@ -243,14 +241,6 @@ for y, row in enumerate(grid):
 context.translate(imageWidth / 2, imageHeight / 2)
 context.rotate(-angle)
 context.translate(-imageWidth / 2, -imageHeight / 2)
-
-# display seed as part of image (obsolete – the log file is a better solution)
-#context.select_font_face("Helvetica", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
-#context.set_font_size(0.012*imageWidth)
-#context.set_source_rgba(0, 0, 0, 0.5)
-#context.move_to(0.002*imageWidth, 0.998*imageHeight)
-##context.show_text("SEED " + str(SEED) + ", RULE " + str(rule))
-#context.show_text(str(SEED))
 
 log('Writing to "{}"...'.format(filename))
 surface.write_to_png(filename)
