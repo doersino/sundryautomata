@@ -21,10 +21,10 @@ def log(s):
 # OPTIONS #
 ###########
 
-width  = random.randint(120,240)  # Width (in cells) of the grid, may be
-                                  # increased if a non-zero rotation angle is
-                                  # set. Height (number of generations) will be
-                                  # computed based on this and the image size.
+width = random.randint(100,250)  # Width (in cells) of the grid, may be
+                                 # increased if a non-zero rotation angle is
+                                 # set. Height (number of generations) will be
+                                 # computed based on this and the image size.
 
 offset = 0  # From which generation on should the states be shown? Handy for
             # rules that take a few generations to converge to a nice repeating
