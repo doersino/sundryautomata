@@ -171,6 +171,11 @@ while retry and triesRemaining > 0:
     transistions = {bin(currentState)[2:].zfill(currentStateWidth): resultingState for currentState, resultingState in enumerate(reversed(ruleBinary))}
 
     # generate initial state
+    #initialState = None
+    #if (0 == random.randint(0,1)):
+    #    initialState = list('0' * width)
+    #    initialState[int(width/2)] = '1'
+    #else:
     initialState = [str(random.randint(0,1)) for b in range(0,width)]
 
     log('Initial state: ' + ''.join(initialState))
