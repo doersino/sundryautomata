@@ -194,7 +194,7 @@ while retry and triesRemaining > 0:
         grid.append(nextState)
 
         # retry on boring rules
-        if triesRemaining > 1 and nextState == currentState or nextState[1:] == currentState[:-1] or nextState[:-1] == currentState[1:]:
+        if triesRemaining > 1 and (nextState == currentState or nextState[1:] == currentState[:-1] or nextState[:-1] == currentState[1:]):
             log("Rule " + str(rule) + " was boring, retrying...")
             retry = True
             triesRemaining = triesRemaining - 1
