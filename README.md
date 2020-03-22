@@ -1,4 +1,4 @@
-# sundrycellularautomata
+# sundryautomata
 
 A simple-ish [twitter bot (@sundryautomata)](https://twitter.com/sundryautomata) that's hosted on [*Cheap Bots, Done Quick!*](https://cheapbotsdonequick.com/source/sundryautomata).
 
