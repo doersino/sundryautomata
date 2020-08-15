@@ -44,5 +44,5 @@ That's basically it!
 If you want your bot to tweet at predefined intervals, use `cron`, [`runwhen`](http://code.dogmap.org/runwhen/) or a similar tool. To make `cron` work with `venv`, you'll need to use bash and execute the `activate` script before running the bot (in this example, it runs every six hours at 42 minutes past the hour):
 
 ```
-42 */6 * * * * /usr/bin/env bash -c 'cd /PATH/TO/sundryautomata && source bin/activate && python3 sundryautomata.py'
+42 */6 * * * /usr/bin/env bash -c 'cd /PATH/TO/sundryautomata && source bin/activate && python3 sundryautomata.py'
 ```
