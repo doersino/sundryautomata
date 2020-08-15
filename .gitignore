@@ -1,2 +1,12 @@
-gen.log
-out.png
+sundryautomata.log
+sundryautomata-*.png
+config.ini
+
+# venv stuff
+bin
+include
+lib
+pyvenv.cfg
+lib64
+pip-selfcheck.json
+__pycache__
