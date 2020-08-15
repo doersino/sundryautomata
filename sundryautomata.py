@@ -14,7 +14,7 @@ from configobj import ConfigObj
 
 import tweepy
 
-seed = time.time_ns()
+seed = "%.20f" % time.time()
 random.seed()
 
 LOGGER = None
