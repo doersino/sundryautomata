@@ -190,45 +190,83 @@ def main():
         if bool(random.getrandbits(1)):
             angle = -angle
 
-    # An index into the color_schemes list defined further up or a tuple of
-    # the form "('#ffe183', '#ffa24b')", with the first element being the
-    # living cell color and the second element being the dead cell color.
-    color_scheme = random.randint(0, 23)
-
     # 'living' or 'dead' to make the grid take on the color of the
     # corresponding cells.
-    grid_mode = ['dead', 'dead', 'living'][random.randint(0, 2)]
+    grid_mode = 'dead'
 
 
     ######################
     # OPTIONS PROCESSING #
     ######################
 
+    # most via coolors.co
     color_schemes = [
-        ('#ffe183', '#ffa24b'),
-        ('#bddba6', '#83b35e'),
-        ('#000000', '#b84c8c'),
-        ('#000000', '#8cb84c'),
-        ('#ffb1b0', '#c24848'),
-        ('#fc5e5d', '#8e0033'),
-        ('#4b669b', '#c0d6ff'),
-        ('#cbe638', '#98ad20'),
-        ('#ffe5db', '#f2936d'),
-        ('#fff9db', '#f2dc6e'),
-        ('#1baaef', '#0d6ca5'),
-        ('#e9c3fe', '#6f5b7e'),
-        ('#dddddd', '#333333'),
-        ('#FC766A', '#5B84B1'),
-        ('#00203F', '#ADEFD1'),
-        ('#97BC62', '#2C5F2D'),
-        ('#FEE715', '#101820'),
-        ('#89ABE3', '#FCF6F5'),
-        ('#D4B996', '#A07855'),
-        ('#990011', '#FCF6F5'),
-        ('#EDC2D8', '#8ABAD3'),
-        ('#ccf381', '#4831d4'),
-        ('#2f3c7e', '#fbeaeb'),
-        ('#ec4d37', '#1d1b1b')
+        "4a4238-4d5359",
+        "ddfff7-93e1d8",
+        "2274a5-f75c03",
+        "04080f-507dbc",
+        "a41623-f85e00",
+        "c9f2c7-aceca1",
+        "068d9d-53599a",
+        "efc7c2-ffe5d4",
+        "ee6055-60d394",
+        "91a6ff-ff88dc",
+        "cffcff-aaefdf",
+        "e8e1ef-d9fff8",
+        "364652-071108",
+        "606c38-283618",
+        "424b54-b38d97",
+        "aa4465-edf0da",
+        "6a0136-bfab25",
+        "2f2504-594e36",
+        "fcefef-7fd8be",
+        "f7fff7-343434",
+        "087e8b-ff5a5f",
+        "0091ad-6efafb",
+        "160c28-efcb68",
+        "e71d36-af4319",
+        "f0d3f7-b98ea7",
+        "ffc15e-f7b05b",
+        "26547c-ef476f",
+        "4effef-73a6ad",
+        "463f3a-8a817c",
+        "faf3dd-c8d5b9",
+        "2b59c3-253c78",
+        "f0b67f-fe5f55",
+        "2b2d42-8d99ae",
+        "a7c6da-eefcce",
+        "88498f-779fa1",
+        "230007-d7cf07",
+        "1b998b-f8f1ff",
+        "2274a5-e7dfc6",
+        "594f3b-776258",
+        "424342-244f26",
+        "ffc6d9-ffe1c6",
+        "fbf5f3-e28413",
+        "ca054d-3b1c32",
+        "2e3532-7e9181",
+        "5c573e-a5b452",
+        "000000-502f4c",
+        "bac1b8-58a4b0",
+        "45a349-2371a1",
+        "3b2326-7e8082",
+        "212975-b83542",
+        "c9b449-e8d98b",
+        "12182b-170c0f",
+        "ede5dd-856d55",
+        "8bf7b8-453429",
+        "fc790d-2083d4",
+        "cf9893-bc7c9c",
+        "7b7554-17183b",
+        "696d7d-6f9283",
+        "990011-fcf6f5",
+        "f8f4e3-d4cdc3",
+        "230007-d7cf07",
+        "d9f4c7-f8fa90",
+        "db7f67-dbbea1",
+        "d1faff-9bd1e5",
+        "0e402d-000000",
+        "25283d-8f3985"
     ]
 
     # offset: split into decimal and integer part
@@ -253,19 +291,16 @@ def main():
     height = math.ceil(height * required_image_height / image_height)
 
     # color scheme selection
-    if isinstance(color_scheme, int):
-        colors = color_schemes[color_scheme]
-    else:
-        colors = color_scheme
-
-    torgb = lambda hex: tuple(int((hex.lstrip('#'))[i:i+2], 16)/255 for i in (0, 2, 4))
-    living_color, dead_color = map(torgb, colors)
+    color_scheme = color_schemes[random.randint(0, len(color_schemes)-1)]
+    living_color, dead_color = color_scheme.split("-")
+    living_color_rgb = tuple(int((living_color)[i:i+2], 16) / 255 for i in (0, 2, 4))
+    dead_color_rgb = tuple(int((dead_color)[i:i+2], 16) / 255 for i in (0, 2, 4))
 
     # grid
     if grid_mode == 'living':
-        grid_color = living_color
+        grid_color_rgb = living_color_rgb
     elif grid_mode == 'dead':
-        grid_color = dead_color
+        grid_color_rgb = dead_color_rgb
 
     # write config to log
     LOGGER.debug("seed=" + str(seed))
@@ -355,7 +390,7 @@ def main():
 
     # fill with background color
     with context:
-        context.set_source_rgb(dead_color[0], dead_color[1], dead_color[2])
+        context.set_source_rgb(dead_color_rgb[0], dead_color_rgb[1], dead_color_rgb[2])
         context.paint()
 
     # draw cells and grid
@@ -368,10 +403,10 @@ def main():
             xp = x_positions[x]
             yp = y_positions[y]
             if cell == '1':
-                context.set_source_rgb(living_color[0], living_color[1], living_color[2])
+                context.set_source_rgb(living_color_rgb[0], living_color_rgb[1], living_color_rgb[2])
                 context.rectangle(xp, yp, cell_size, cell_size)
                 context.fill()
-            context.set_source_rgb(grid_color[0], grid_color[1], grid_color[2])
+            context.set_source_rgb(grid_color_rgb[0], grid_color_rgb[1], grid_color_rgb[2])
             context.rectangle(xp, yp, cell_size, cell_size)
             context.stroke()
     context.translate(image_width / 2, image_height / 2)
@@ -382,7 +417,8 @@ def main():
     image_path = image_path_template.format(
         datetime=datetime.today().strftime("%Y-%m-%dT%H.%M.%S"),
         rule=rule,
-        seed=seed
+        seed=seed,
+        color_scheme=color_scheme
     )
     LOGGER.debug(image_path)
     surface.write_to_png(image_path)
