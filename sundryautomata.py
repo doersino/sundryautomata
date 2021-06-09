@@ -313,7 +313,7 @@ def main():
     # Width (in cells) of the grid, may be increased if a non-zero rotation
     # angle is set. Height (number of generations) will be computed based on
     # this and the image size.
-    width = random.randint(60, 300)
+    width = random.randint(50, 350)
 
     # From which generation on should the states be shown? Handy for rules
     # that take a few generations to converge to a nice repeating pattern.
@@ -325,10 +325,10 @@ def main():
     # resulting blank spots in the corners, the dimensions of the grid are
     # increased to keep the displayed cell size constant (as opposed to scaling
     # up the grid). Here, the angle is kept zero with a probability of 1/10, and
-    # around ±4-20 degrees otherwise.
+    # around ±4-35 degrees otherwise.
     angle = 0
     if 0 != random.randint(0, 9):
-        angle = random.randint(4, 20)
+        angle = random.randint(4, 35)
         if bool(random.getrandbits(1)):
             angle = -angle
 
@@ -415,10 +415,10 @@ def main():
     while retry and remaining_tries > 0:
         retry = False
 
-        # select rule: either one of the well-known, "small" rules below 256, or with ⅔
-        # probability a "large" one.
-        small_rules = 0 == random.randint(0, 5)
-        if (small_rules):
+        # select rule: either one of the well-known, "small" rules below 256,
+        # or with higher probability a "large" one.
+        small_rules = 0 == random.randint(0, 9)
+        if small_rules:
             rule = random.randint(0, 255)
         else:
             rule = random.randint(256, 4294967296)
