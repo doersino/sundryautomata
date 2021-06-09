@@ -116,6 +116,148 @@ class Tweeter:
     def tweet(self, text, media):
         self.api.update_status(text, media_ids=[media.media_id])
 
+class ColorHSL():
+    """
+    HSL colors, convertable from RGB. Via https://stackoverflow.com/a/17433060.
+    """
+
+    def __init__(self, h, s, l):
+        self.h = h
+        self.s = s
+        self.l = l
+
+    def __repr__(self):
+        return f"ColorHSL({self.h}, {self.s}, {self.l})"
+
+    @classmethod
+    def from_rgb(cls, rgb):
+        r = rgb.r / 255
+        g = rgb.g / 255
+        b = rgb.b / 255
+        c_max = max(r, g, b)
+        c_min = min(r, g, b)
+        delta = c_max - c_min
+        l = (c_max + c_min) / 2
+        h = 0
+        s = 0
+
+        if delta == 0:
+            h = 0
+        elif c_max == r:
+            h = 60 * (((g - b) / delta) % 6)
+        elif c_max == g:
+            h = 60 * (((b - r) / delta) + 2)
+        else:
+            h = 60 * (((r - g) / delta) + 4)
+
+        if delta == 0:
+            s = 0
+        else:
+            s = (delta / (1 - abs(2 * l - 1)))
+
+        return cls(h, s, l)
+
+class ColorRGB():
+    """
+    RGB colors, convertable from HSL and adjustable. Via
+    https://stackoverflow.com/a/17433060.
+    """
+
+    def __init__(self, r, g, b):
+        self.r = r
+        self.g = g
+        self.b = b
+
+    def __repr__(self):
+        return f"ColorRGB({self.r}, {self.g}, {self.b})"
+
+    def filename_style(self):
+        return f"r{self.r}g{self.g}b{self.b}"
+
+    @classmethod
+    def random(cls):
+        r = random.randint(0, 255)
+        g = random.randint(0, 255)
+        b = random.randint(0, 255)
+
+        return cls(r, g, b)
+
+    @classmethod
+    def from_hsl(cls, hsl):
+        h = hsl.h
+        s = hsl.s
+        l = hsl.l
+        c = (1 - abs(2 * l - 1)) * s
+        x = c * (1 - abs((h / 60 ) % 2 - 1))
+        m = l - c / 2
+        r = None
+        g = None
+        b = None
+
+        if h < 60:
+            r = c
+            g = x
+            b = 0
+        elif h < 120:
+            r = x
+            g = c
+            b = 0
+        elif h < 180:
+            r = 0
+            g = c
+            b = x
+        elif h < 240:
+            r = 0
+            g = x
+            b = c
+        elif h < 300:
+            r = x
+            g = 0
+            b = c
+        else:
+            r = c
+            g = 0
+            b = x
+
+        r = max(0, math.floor((r + m) * 255))
+        g = max(0, math.floor((g + m) * 255))
+        b = max(0, math.floor((b + m) * 255))
+
+        return cls(r, g, b)
+
+    def hue_shifted(self, degrees):
+        """Shifts the hue of a copy by a number of degrees."""
+
+        hsl = ColorHSL.from_rgb(self)
+        hsl.h += degrees
+        if hsl.h > 360:
+            hsl.h -= 360
+        elif hsl.h < 0:
+            hsl.h += 360
+        return ColorRGB.from_hsl(hsl)
+
+    def saturation_shifted(self, offset):
+        """Shifts the saturation of a copy by an offset in [-1, 1]."""
+
+        hsl = ColorHSL.from_rgb(self)
+        hsl.s += offset
+        if hsl.s > 1.0:
+            hsl.s = 1.0
+        elif hsl.s < 0.0:
+            hsl.s = 0.0
+        return ColorRGB.from_hsl(hsl)
+
+    def lightness_shifted(self, offset):
+        """Shifts the lightness of a copy by an offset in [-1, 1]."""
+
+        hsl = ColorHSL.from_rgb(self)
+        hsl.l += offset
+        if hsl.l > 1.0:
+            hsl.l -= 1.1
+        elif hsl.l < 0.0:
+            hsl.l = 0.0
+        return ColorRGB.from_hsl(hsl)
+
 def main():
     global VERBOSITY
     global LOGGER
@@ -199,76 +341,6 @@ def main():
     # OPTIONS PROCESSING #
     ######################
 
-    # most via coolors.co
-    color_schemes = [
-        "4a4238-4d5359",
-        "ddfff7-93e1d8",
-        "2274a5-f75c03",
-        "04080f-507dbc",
-        "a41623-f85e00",
-        "c9f2c7-aceca1",
-        "068d9d-53599a",
-        "efc7c2-ffe5d4",
-        "ee6055-60d394",
-        "91a6ff-ff88dc",
-        "cffcff-aaefdf",
-        "e8e1ef-d9fff8",
-        "364652-071108",
-        "606c38-283618",
-        "424b54-b38d97",
-        "aa4465-edf0da",
-        "6a0136-bfab25",
-        "2f2504-594e36",
-        "fcefef-7fd8be",
-        "f7fff7-343434",
-        "087e8b-ff5a5f",
-        "0091ad-6efafb",
-        "160c28-efcb68",
-        "e71d36-af4319",
-        "f0d3f7-b98ea7",
-        "ffc15e-f7b05b",
-        "26547c-ef476f",
-        "4effef-73a6ad",
-        "463f3a-8a817c",
-        "faf3dd-c8d5b9",
-        "2b59c3-253c78",
-        "f0b67f-fe5f55",
-        "2b2d42-8d99ae",
-        "a7c6da-eefcce",
-        "88498f-779fa1",
-        "230007-d7cf07",
-        "1b998b-f8f1ff",
-        "2274a5-e7dfc6",
-        "594f3b-776258",
-        "424342-244f26",
-        "ffc6d9-ffe1c6",
-        "fbf5f3-e28413",
-        "ca054d-3b1c32",
-        "2e3532-7e9181",
-        "5c573e-a5b452",
-        "000000-502f4c",
-        "bac1b8-58a4b0",
-        "45a349-2371a1",
-        "3b2326-7e8082",
-        "212975-b83542",
-        "c9b449-e8d98b",
-        "12182b-170c0f",
-        "ede5dd-856d55",
-        "8bf7b8-453429",
-        "fc790d-2083d4",
-        "cf9893-bc7c9c",
-        "7b7554-17183b",
-        "696d7d-6f9283",
-        "990011-fcf6f5",
-        "f8f4e3-d4cdc3",
-        "230007-d7cf07",
-        "d9f4c7-f8fa90",
-        "db7f67-dbbea1",
-        "d1faff-9bd1e5",
-        "0e402d-000000",
-        "25283d-8f3985"
-    ]
-
     # offset: split into decimal and integer part
     generation_offset = max(0, int(offset))
     display_offset = offset - generation_offset
@@ -290,24 +362,40 @@ def main():
     width = math.ceil(width * required_image_width / image_width)
     height = math.ceil(height * required_image_height / image_height)
 
-    # color scheme selection
-    color_scheme = color_schemes[random.randint(0, len(color_schemes)-1)]
-    living_color, dead_color = color_scheme.split("-")
-    living_color_rgb = tuple(int((living_color)[i:i+2], 16) / 255 for i in (0, 2, 4))
-    dead_color_rgb = tuple(int((dead_color)[i:i+2], 16) / 255 for i in (0, 2, 4))
+    # color scheme generation
+    living_color = ColorRGB.random()
+    dead_color = living_color.saturation_shifted(random.random() - 0.5)
+
+    # rarely shift hue a lot, mostly a little
+    dead_hue_shift = 0
+    if random.random() > 0.9:
+        dead_hue_shift = random.randint(0, 360)
+    else:
+        dead_hue_shift = random.randint(0, 40) - 20
+    dead_color.hue_shifted(dead_hue_shift)
+
+    # push dead color for dark and bright living colors towards the middle
+    living_lightness = ColorHSL.from_rgb(living_color).l
+    if living_lightness < 0.1:
+        dead_color = dead_color.lightness_shifted(0.2 + random.random() / 2)
+    elif living_lightness > 0.9:
+        dead_color = dead_color.lightness_shifted(-(0.2 + random.random() / 2))
+    else:
+        dead_color = dead_color.lightness_shifted(random.random() - 0.5)
 
     # grid
     if grid_mode == 'living':
-        grid_color_rgb = living_color_rgb
+        grid_color = living_color
     elif grid_mode == 'dead':
-        grid_color_rgb = dead_color_rgb
+        grid_color = dead_color
 
     # write config to log
     LOGGER.debug("seed=" + str(seed))
     LOGGER.debug("width=" + str(width))
     LOGGER.debug("offset=" + str(offset))
     LOGGER.debug("angle=" + str(angle))
-    LOGGER.debug("color_scheme=" + str(color_scheme))
+    LOGGER.debug("living_color=" + str(living_color))
+    LOGGER.debug("dead_color=" + str(dead_color))
     LOGGER.debug("grid_mode=" + str(grid_mode))
 
 
@@ -390,7 +478,7 @@ def main():
 
     # fill with background color
     with context:
-        context.set_source_rgb(dead_color_rgb[0], dead_color_rgb[1], dead_color_rgb[2])
+        context.set_source_rgb(dead_color.r / 255, dead_color.g / 255, dead_color.b / 255)
         context.paint()
 
     # draw cells and grid
@@ -403,10 +491,10 @@ def main():
             xp = x_positions[x]
             yp = y_positions[y]
             if cell == '1':
-                context.set_source_rgb(living_color_rgb[0], living_color_rgb[1], living_color_rgb[2])
+                context.set_source_rgb(living_color.r / 255, living_color.g / 255, living_color.b / 255)
                 context.rectangle(xp, yp, cell_size, cell_size)
                 context.fill()
-            context.set_source_rgb(grid_color_rgb[0], grid_color_rgb[1], grid_color_rgb[2])
+            context.set_source_rgb(grid_color.r / 255, grid_color.g / 255, grid_color.b / 255)
             context.rectangle(xp, yp, cell_size, cell_size)
             context.stroke()
     context.translate(image_width / 2, image_height / 2)
@@ -418,7 +506,8 @@ def main():
         datetime=datetime.today().strftime("%Y-%m-%dT%H.%M.%S"),
         rule=rule,
         seed=seed,
-        color_scheme=color_scheme
+        living_color=living_color.filename_style(),
+        dead_color=dead_color.filename_style()
     )
     LOGGER.debug(image_path)
     surface.write_to_png(image_path)
