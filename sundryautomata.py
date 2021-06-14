@@ -387,7 +387,6 @@ def main():
     # dark colors, but it's better than nothing)
     living_color = ColorRGB.random()
     dead_color = living_color
-    print(living_color)
     while dead_color.distance_to(living_color) < 0.2:
         dead_color = living_color.saturation_shifted(random.random() - 0.5)
 
@@ -407,9 +406,6 @@ def main():
             dead_color = dead_color.lightness_shifted(-(0.2 + random.random() / 2))
         else:
             dead_color = dead_color.lightness_shifted(random.random() - 0.5)
-
-        print(dead_color)
-        print(dead_color.distance_to(living_color))
 
     # grid
     if grid_mode == 'living':
