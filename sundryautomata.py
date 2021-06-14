@@ -258,6 +258,26 @@ class ColorRGB():
             hsl.l = 0.0
         return ColorRGB.from_hsl(hsl)
 
+    def distance_to(self, other):
+        """
+        Unscientific, ad-hoc perceptual distance score between two colors,
+        ranges between 0 and 1. This is used to make sure foreground and
+        background colors aren't too similar.
+        """
+
+        self_hsl = ColorHSL.from_rgb(self)
+        other_hsl = ColorHSL.from_rgb(other)
+
+        score = 0
+        score += 0.15 * abs(self_hsl.h - other_hsl.h) / 360
+        score += 0.25 * abs(self_hsl.s - other_hsl.s)
+        score += 0.45 * abs(self_hsl.l - other_hsl.l)
+        score += 0.05 * abs(self.r - other.r) / 255
+        score += 0.05 * abs(self.g - other.g) / 255
+        score += 0.05 * abs(self.b - other.b) / 255
+
+        return score
+
 def main():
     global VERBOSITY
     global LOGGER
@@ -362,26 +382,34 @@ def main():
     width = math.ceil(width * required_image_width / image_width)
     height = math.ceil(height * required_image_height / image_height)
 
-    # color scheme generation
+    # color scheme generation, while making sure the color of dead cells differs
+    # sufficiently from the living cell color (which doesn't work super well for
+    # dark colors, but it's better than nothing)
     living_color = ColorRGB.random()
-    dead_color = living_color.saturation_shifted(random.random() - 0.5)
+    dead_color = living_color
+    print(living_color)
+    while dead_color.distance_to(living_color) < 0.2:
+        dead_color = living_color.saturation_shifted(random.random() - 0.5)
 
-    # rarely shift hue a lot, mostly a little
-    dead_hue_shift = 0
-    if random.random() > 0.9:
-        dead_hue_shift = random.randint(0, 360)
-    else:
-        dead_hue_shift = random.randint(0, 40) - 20
-    dead_color.hue_shifted(dead_hue_shift)
+        # rarely shift hue a lot, mostly a little
+        dead_hue_shift = 0
+        if random.random() > 0.9:
+            dead_hue_shift = random.randint(0, 360)
+        else:
+            dead_hue_shift = random.randint(0, 40) - 20
+        dead_color.hue_shifted(dead_hue_shift)
 
-    # push dead color for dark and bright living colors towards the middle
-    living_lightness = ColorHSL.from_rgb(living_color).l
-    if living_lightness < 0.1:
-        dead_color = dead_color.lightness_shifted(0.2 + random.random() / 2)
-    elif living_lightness > 0.9:
-        dead_color = dead_color.lightness_shifted(-(0.2 + random.random() / 2))
-    else:
-        dead_color = dead_color.lightness_shifted(random.random() - 0.5)
+        # push dead color for dark and bright living colors towards the middle
+        living_lightness = ColorHSL.from_rgb(living_color).l
+        if living_lightness < 0.1:
+            dead_color = dead_color.lightness_shifted(0.2 + random.random() / 2)
+        elif living_lightness > 0.9:
+            dead_color = dead_color.lightness_shifted(-(0.2 + random.random() / 2))
+        else:
+            dead_color = dead_color.lightness_shifted(random.random() - 0.5)
+
+        print(dead_color)
+        print(dead_color.distance_to(living_color))
 
     # grid
     if grid_mode == 'living':
