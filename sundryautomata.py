@@ -443,7 +443,7 @@ def main():
         # or with higher probability a "large" one.
         small_rules = 0 == random.randint(0, 9)
         if small_rules:
-            rule = random.randint(0, 255)
+            rule = random.randint(1, 255)
         else:
             rule = random.randint(256, 4294967296)
         LOGGER.debug("rule=" + str(rule))
