@@ -4,7 +4,7 @@ cffi==1.14.5
 chardet==4.0.0
 configobj==5.0.6
 idna==2.10
-oauthlib==3.1.1
+oauthlib==3.2.1
 pycparser==2.20
 PySocks==1.7.1
 requests==2.25.1
