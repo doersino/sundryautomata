@@ -1,10 +1,10 @@
 # sundryautomata
 
-*A simple-ish Twitter bot that posts pretty pictures of cellular automata.*
+*A simple-ish Mastodon/Twitter bot that posts pretty pictures of cellular automata.*
 
-The 1D cellular automaton generation is based on a [previous project of mine](https://github.com/doersino/cellular-automata-posters/), while the tweeting and logging part is adapted from [another project of mine](https://github.com/doersino/aerialbot/). Everything is a remix.
+The 1D cellular automaton generation is based on a [previous project of mine](https://github.com/doersino/cellular-automata-posters/), while the tooting/tweeting and logging part is adapted from [another project of mine](https://github.com/doersino/aerialbot/). Everything is a remix.
 
-#### Check it out at [@sundryautomata](https://twitter.com/sundryautomata)!
+#### Check it out at [@sundryautomata@botsin.space](https://botsin.space/@sundryautomata)!
 
 ![](screenshot.png)
 
@@ -28,7 +28,7 @@ $ pip3 install -r requirements.txt
 
 ### Configuration
 
-Copy `config.sample.ini` to `config.ini`, open it and modify it based on the instructions in the comments. Most notably, fill in your Twitter API keys and secrets (but the bot will still generate images without those).
+Copy `config.sample.ini` to `config.ini`, open it and modify it based on the instructions in the comments. Most notably, fill in your Mastodon or Twitter API credentials (but the bot will still generate images without those).
 
 
 ### Running
@@ -41,7 +41,7 @@ $ python3 sundryautomata.py
 
 That's basically it!
 
-If you want your bot to tweet at predefined intervals, use `cron`, [`runwhen`](http://code.dogmap.org/runwhen/) or a similar tool. To make `cron` work with `venv`, you'll need to use bash and execute the `activate` script before running the bot (in this example, it runs every six hours at 42 minutes past the hour):
+If you want your bot to post at predefined intervals, use `cron`, [`runwhen`](http://code.dogmap.org/runwhen/) or a similar tool. To make `cron` work with `venv`, you'll need to use bash and execute the `activate` script before running the bot (in this example, it runs every six hours at 42 minutes past the hour):
 
 ```
 42 */6 * * * /usr/bin/env bash -c 'cd /PATH/TO/sundryautomata && source bin/activate && python3 sundryautomata.py'
