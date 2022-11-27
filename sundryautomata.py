@@ -132,7 +132,7 @@ class Tooter:
     def upload(self, path):
         """Uploads an image to Mastodon."""
 
-        return self.api.media_post(path)
+        return self.api.media_post(path, synchronous=True)
 
     def toot(self, text, media):
         self.api.status_post(text, media_ids=[media.id])
