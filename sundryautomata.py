@@ -13,7 +13,7 @@ import cairocffi as cairo
 from configobj import ConfigObj
 
 import tweepy
-from mastodon import Mastodon
+from mastodon import Mastodon, MastodonError
 
 seed = "%.20f" % time.time()
 random.seed()
@@ -119,8 +119,9 @@ class Tweeter:
 
 class Tooter:
     """
-    Basic class for tooting images, a simple wrapper around the relevant
-    functions of the Mastodon.py package.
+    Basic class for tooting images or videos, a simple wrapper around the
+    relevant functions of the Mastodon.py package, plus retrying.
+    (Identical in ærialbot, earthacrosstime, and sundryautomata.)
     """
 
     def __init__(self, api_base_url, access_token):
@@ -129,13 +130,42 @@ class Tooter:
             api_base_url = api_base_url
         )
 
-    def upload(self, path):
-        """Uploads an image to Mastodon."""
+    def __retry__(self, fn, exception, tries=3, delay=10):
+        """
+        Retries a function up to `tries` times every `delay` seconds until it
+        stops throwing `exception`.
+        """
 
-        return self.api.media_post(path, synchronous=True)
+        while tries > 0:
+            tries -= 1
+            try:
+                return fn()
+            except exception as e:
+                if tries == 0:
+                    raise e
+                time.sleep(delay)
+
+    def upload(self, path):
+        """
+        Uploads an image or video to Mastodon, retrying up to three times in
+        case the server has a hiccup.
+        """
+
+        def __do_upload__():
+            return self.api.media_post(path, synchronous=True)
+
+        return self.__retry__(__do_upload__, MastodonError)
 
     def toot(self, text, media):
-        self.api.status_post(text, media_ids=[media.id])
+        """
+        Posts a toot with media, retrying up to three times in case the server
+        has a hiccup.
+        """
+
+        def __do_toot__():
+            self.api.status_post(text, media_ids=[media.id])
+
+        self.__retry__(__do_toot__, MastodonError)
 
 class ColorHSL():
     """
