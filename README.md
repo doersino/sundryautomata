@@ -4,7 +4,7 @@
 
 The 1D cellular automaton generation is based on a [previous project of mine](https://github.com/doersino/cellular-automata-posters/), while the tooting/tweeting and logging part is adapted from [another project of mine](https://github.com/doersino/aerialbot/). Everything is a remix.
 
-#### Check it out at [@sundryautomata@botsin.space](https://botsin.space/@sundryautomata)!
+#### Check it out at [@sundryautomata@mastodon.social](https://mastodon.social/@sundryautomata)!
 
 ![](screenshot.png)
 
