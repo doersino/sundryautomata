@@ -12,7 +12,6 @@ import cairocffi as cairo
 
 from configobj import ConfigObj
 
-import tweepy
 from mastodon import Mastodon, MastodonError
 
 seed = "%.20f" % time.time()
@@ -96,26 +95,6 @@ class Log:
         for line in traceback_lines:
             self.critical(line)
         sys.exit(1)
-
-class Tweeter:
-    """Basic class for tweeting images, a simple wrapper around tweepy."""
-
-    def __init__(self, consumer_key, consumer_secret, access_token, access_token_secret):
-
-        # for references, see:
-        # http://docs.tweepy.org/en/latest/api.html#status-methods
-        # https://developer.twitter.com/en/docs/tweets/post-and-engage/guides/post-tweet-geo-guide
-        auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-        auth.set_access_token(access_token, access_token_secret)
-        self.api = tweepy.API(auth)
-
-    def upload(self, path):
-        """Uploads an image to Twitter."""
-
-        return self.api.media_upload(path)
-
-    def tweet(self, text, media):
-        self.api.update_status(text, media_ids=[media.media_id])
 
 class Tooter:
     """
@@ -357,16 +336,6 @@ def main():
     image_width = config['GENERAL']['image_width']
     image_height = config['GENERAL']['image_height']
 
-    t_consumer_key = config['TWITTER']['consumer_key']
-    t_consumer_secret = config['TWITTER']['consumer_secret']
-    t_access_token = config['TWITTER']['access_token']
-    t_access_token_secret = config['TWITTER']['access_token_secret']
-
-    tweet_text = config['TWITTER']['tweet_text']
-
-    # whether to enable or disable tweeting
-    tweeting = all(x is not None for x in [t_consumer_key, t_consumer_secret, t_access_token, t_access_token_secret])
-
     m_api_base_url = config['MASTODON']['api_base_url']
     m_access_token = config['MASTODON']['access_token']
 
@@ -377,7 +346,7 @@ def main():
 
     ############################################################################
 
-    # the code below, until the tweeting/tooting bits, is taken from the
+    # the code below, until the tooting bit, is taken from the
     # original version of the bot. it's not great by any means, but i don't feel
     # like pulling it apart, cleaning and oiling the parts, and putting it back
     # together, so i just made some minor changes to make it work with the new
@@ -596,20 +565,6 @@ def main():
     surface.write_to_png(image_path)
 
     ############################################################################
-
-    if tweeting:
-        LOGGER.info("Connecting to Twitter...")
-        tweeter = Tweeter(t_consumer_key, t_consumer_secret, t_access_token, t_access_token_secret)
-
-        LOGGER.info("Uploading image to Twitter...")
-        media = tweeter.upload(image_path)
-
-        LOGGER.info("Sending tweet...")
-        tweet_text = tweet_text.format(rule=rule)
-        LOGGER.debug("tweet_text=" + tweet_text)
-        tweeter.tweet(tweet_text, media)
-    else:
-        LOGGER.info("Tweeting is disabled – not all of the keys and secrets have been set.")
 
     if tooting:
         LOGGER.info("Connecting to Mastodon...")

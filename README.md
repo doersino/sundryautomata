@@ -1,6 +1,6 @@
 # sundryautomata
 
-*A simple-ish Mastodon/Twitter bot that posts pretty pictures of cellular automata.*
+*A simple-ish Mastodon (formerly Twitter) bot that posts pretty pictures of cellular automata.*
 
 The 1D cellular automaton generation is based on a [previous project of mine](https://github.com/doersino/cellular-automata-posters/), while the tooting/tweeting and logging part is adapted from [another project of mine](https://github.com/doersino/aerialbot/). Everything is a remix.
 
@@ -28,7 +28,7 @@ $ pip3 install -r requirements.txt
 
 ### Configuration
 
-Copy `config.sample.ini` to `config.ini`, open it and modify it based on the instructions in the comments. Most notably, fill in your Mastodon or Twitter API credentials (but the bot will still generate images without those).
+Copy `config.sample.ini` to `config.ini`, open it and modify it based on the instructions in the comments. Most notably, fill in your Mastodon API credentials (but the bot will still generate images without those).
 
 
 ### Running
