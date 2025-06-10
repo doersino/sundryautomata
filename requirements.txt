@@ -10,6 +10,6 @@ Mastodon.py==2.0.1
 pycparser==2.22
 python-dateutil==2.9.0.post0
 python-magic==0.4.27
-requests==2.32.3
+requests==2.32.4
 six==1.17.0
 urllib3==2.3.0
